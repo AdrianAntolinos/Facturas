@@ -10,9 +10,9 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="70dp"
-        android:text="Descripción:"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="44dp"
+        android:text="DESCRIPCIÓN:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -72,7 +72,7 @@
         android:layout_height="55dp"
         android:layout_marginStart="135dp"
         android:layout_marginTop="34dp"
-        android:onClick="generar"
+        android:onClick="generarFactura"
         android:text="GENERAR FACTURA"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btvolver" />
@@ -81,7 +81,7 @@
         android:id="@+id/etdescripcion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="textPersonName"

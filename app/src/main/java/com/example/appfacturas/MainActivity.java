@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,10 +28,6 @@ public class MainActivity extends AppCompatActivity {
     EditText etcif, etrazon, etnumero, etcodigo;
     Button btsiguiente, btaceptar, btcambiar;
     TextView txtcif, txtrazon, txtnum;
-
-
-   // EditText etdescripcion, etbase , etiva, ettotal, etfechafactura, etfechavencimiento;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,25 +54,12 @@ public class MainActivity extends AppCompatActivity {
         etrazon.setVisibility(View.INVISIBLE);
         etnumero.setVisibility(View.INVISIBLE);
         btsiguiente.setVisibility(View.INVISIBLE);
-        btcambiar.setVisibility(View.INVISIBLE);
 
-        ////
-
-//        etdescripcion = (EditText)findViewById(R.id.etdescripcion);
-//        etbase = (EditText)findViewById(R.id.etbase);
-//        etiva = (EditText)findViewById(R.id.etiva);
-//        ettotal = (EditText)findViewById(R.id.ettotal);
-//        etfechafactura = (EditText)findViewById(R.id.etfechafactura);
-//        etfechavencimiento = (EditText)findViewById(R.id.etfechavencimiento);
-
+        btcambiar.setEnabled(false);
 
     }
 
-
-
     public void aceptar (View view){
-
-       /// Toast.makeText(getApplicationContext(), "Enhorabuna makina eres un crack", Toast.LENGTH_LONG).show();
 
         if (etcodigo.getText().length()==0){
             Toast.makeText(getApplicationContext(), "Debes introducir un código", Toast.LENGTH_LONG).show();
@@ -83,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         else {
 
             etcodigo.setEnabled(false);
-
             txtcif.setVisibility(View.VISIBLE);
             txtrazon.setVisibility(View.VISIBLE);
             txtnum.setVisibility(View.VISIBLE);
@@ -91,17 +74,16 @@ public class MainActivity extends AppCompatActivity {
             etrazon.setVisibility(View.VISIBLE);
             etnumero.setVisibility(View.VISIBLE);
             btsiguiente.setVisibility(View.VISIBLE);
-            btcambiar.setVisibility(View.VISIBLE);
+            btcambiar.setEnabled(true);
             etcif.setEnabled(true);
             etrazon.setEnabled(true);
             etnumero.setEnabled(true);
             btsiguiente.setEnabled(true);
+
         }
     }
 
     public void cambiar (View view){
-
-       // Toast.makeText(getApplicationContext(), "Enhorabuna makina eres un crack", Toast.LENGTH_LONG).show();
 
         etcodigo.setEnabled(true);
         etcodigo.setText("");
@@ -109,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         etrazon.setEnabled(false);
         etnumero.setEnabled(false);
         btsiguiente.setEnabled(false);
-       // etdescripcion.setEnabled(false);
+
     }
 
     public void siguiente (View view){
