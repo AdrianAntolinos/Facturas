@@ -2,7 +2,9 @@ package com.example.appfacturas;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
         btcambiar.setEnabled(false);
 
+
+
     }
 
     public void aceptar (View view){
@@ -65,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Debes introducir un código", Toast.LENGTH_LONG).show();
         }
         else {
+
+            leer();
 
             etcodigo.setEnabled(false);
             txtcif.setVisibility(View.VISIBLE);
@@ -75,10 +81,19 @@ public class MainActivity extends AppCompatActivity {
             etnumero.setVisibility(View.VISIBLE);
             btsiguiente.setVisibility(View.VISIBLE);
             btcambiar.setEnabled(true);
+            txtcif.setVisibility(View.VISIBLE);
+            txtnum.setVisibility(View.VISIBLE);
+            txtrazon.setVisibility(View.VISIBLE);
             etcif.setEnabled(true);
             etrazon.setEnabled(true);
             etnumero.setEnabled(true);
             btsiguiente.setEnabled(true);
+
+            if(etcif.getText().length()!=0){
+                etcif.setEnabled(false);
+                etrazon.setEnabled(false);
+            }
+
 
         }
     }
@@ -87,10 +102,30 @@ public class MainActivity extends AppCompatActivity {
 
         etcodigo.setEnabled(true);
         etcodigo.setText("");
-        etcif.setEnabled(false);
-        etrazon.setEnabled(false);
-        etnumero.setEnabled(false);
-        btsiguiente.setEnabled(false);
+        etcif.setVisibility(View.INVISIBLE);
+
+
+     //   etrazon.setEnabled(false);
+        etrazon.setVisibility(View.INVISIBLE);
+
+       // etnumero.setEnabled(false);
+        etnumero.setVisibility(View.INVISIBLE);
+
+        //btsiguiente.setEnabled(false);
+        btsiguiente.setVisibility(View.INVISIBLE);
+
+        SharedPreferences preferencias = getSharedPreferences("datos", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferencias.edit();
+
+        editor.clear();
+        editor.commit();
+
+
+        etnumero.setText("");
+
+        txtcif.setVisibility(View.INVISIBLE);
+        txtrazon.setVisibility(View.INVISIBLE);
+        txtnum.setVisibility(View.INVISIBLE);
 
     }
 
@@ -101,11 +136,56 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             Intent intent = new Intent(MainActivity.this, Activity2.class);
-            intent.putExtra("codigo", etcif.getText().toString());
+            intent.putExtra("cif", etcif.getText().toString());
             intent.putExtra("numero", etnumero.getText().toString());
             intent.putExtra("razon", etrazon.getText().toString());
+            guardar();
             startActivity(intent);
         }
     }
+
+    public void guardar(){
+
+        SharedPreferences preferencias = getSharedPreferences("datos", Context.MODE_PRIVATE);
+        String cif = etcif.getText().toString();
+        String razon = etrazon.getText().toString();
+
+        SharedPreferences.Editor editor = preferencias.edit();
+
+        editor.putString("CIF",cif);
+        editor.putString("RAZONSOCIAL",razon);
+
+        editor.commit();
+
+    }
+
+    public void leer(){
+
+        SharedPreferences preferencias = getSharedPreferences("datos", Context.MODE_PRIVATE);
+
+        String cif = preferencias.getString("CIF","");
+        String razon = preferencias.getString("RAZONSOCIAL","");
+
+        etcif.setText(cif);
+        etrazon.setText(razon);
+
+        if(!etcif.getText().equals("") && !etrazon.getText().equals("")){
+            etcif.setEnabled(false);
+            etrazon.setEnabled(false);
+        }
+    }
+
+//    public void editar (View view){
+//
+//        SharedPreferences preferencias = getSharedPreferences("datos", Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = preferencias.edit();
+//
+//        editor.clear();
+//        editor.commit();
+//
+//        Intent i = new Intent(MainActivity.this, MainActivity.class);
+//        startActivity(i);
+//
+//    }
 
 }

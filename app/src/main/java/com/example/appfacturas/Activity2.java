@@ -1,10 +1,11 @@
 package com.example.appfacturas;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,32 +13,41 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Activity2 extends AppCompatActivity {
 
     EditText etdescripcion, etbase, etiva, ettotal, etfechafactura, etfechavencimiento;
     Button btcrear, btvolver;
+    String numero, nombreficherobinario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-
+        String id = BuildConfig.APPLICATION_ID;
         etdescripcion = (EditText) findViewById(R.id.etdescripcion);
         etbase = (EditText) findViewById(R.id.etbase);
         etiva = (EditText) findViewById(R.id.etiva);
         ettotal = (EditText) findViewById(R.id.ettotal);
         etfechafactura = (EditText) findViewById(R.id.etfechafactura);
         etfechavencimiento = (EditText) findViewById(R.id.etfechavencimiento);
-
+        ///
+        String cif = getIntent().getStringExtra("cif");
+        numero = getIntent().getStringExtra("numero");
+        String razon = getIntent().getStringExtra("razon");
+        ///
         btcrear = (Button) findViewById(R.id.btcrear);
-        btvolver = (Button) findViewById(R.id.btvolver);
+        btvolver = (Button) findViewById(R.id.btborrar);
 
     }
 
@@ -45,8 +55,8 @@ public class Activity2 extends AppCompatActivity {
     public void crearFicheroBinario() {
 
         //ME PASO LAS 3 PRIMERAS VARIABLES DEL PRIMER LAYOUT
-        String codigo = getIntent().getStringExtra("codigo");
-        String numero = getIntent().getStringExtra("numero");
+        String cif = getIntent().getStringExtra("cif");
+        numero = getIntent().getStringExtra("numero");
         String razon = getIntent().getStringExtra("razon");
         String descripcion = etdescripcion.getText().toString();
         String base = etbase.getText().toString();
@@ -54,26 +64,24 @@ public class Activity2 extends AppCompatActivity {
         String total = ettotal.getText().toString();
         String fechafactura = etfechafactura.getText().toString();
         String fechavencimiento = etfechavencimiento.getText().toString();
+        double basedouble = Double.parseDouble(base);
+        double ivadouble = Double.parseDouble(iva);
+        double totaldouble = Double.parseDouble(total);
 
+        Date ffactura = stringToDate(fechafactura, null);
+        Date fvencimiento = stringToDate(fechavencimiento, null);
+
+        Factura factura = new Factura(cif, razon, numero, descripcion, basedouble, ivadouble, totaldouble, ffactura, fvencimiento);
+
+        nombreficherobinario = "factura" + numero + ".bin";
         FileOutputStream fos = null;
-        DataOutputStream salida = null;
-
+        ObjectOutputStream salida = null;
 
         try {
+            fos = openFileOutput(nombreficherobinario, Context.MODE_PRIVATE);
+            salida = new ObjectOutputStream(fos);
 
-            fos = new FileOutputStream("factura.bin");
-            salida = new DataOutputStream(fos);
-
-            salida.writeUTF(codigo);
-            salida.writeUTF(numero);
-            salida.writeUTF(razon);
-            salida.writeUTF(descripcion);
-            salida.writeUTF(base);
-            salida.writeUTF(iva);
-            salida.writeUTF(total);
-            salida.writeUTF(fechafactura);
-            salida.writeUTF(fechavencimiento);
-
+            salida.writeObject(factura);
 
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -94,24 +102,23 @@ public class Activity2 extends AppCompatActivity {
     }
 
 
-    public void volver(View view) {
+    public void borrar(View view) {
 
         AlertDialog.Builder alerta = new AlertDialog.Builder(Activity2.this);
 
-        alerta.setMessage("Si vuelve tendrá que empezar la factura de nuevo.")
+        alerta.setMessage("¿Desea borrar la factura?")
                 .setCancelable(false).setPositiveButton("SI", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Activity2.this, MainActivity.class);
                 startActivity(intent);
             }
-        })
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
 
         AlertDialog titulo = alerta.create();
         titulo.setTitle("¿Desea volver?");
@@ -126,20 +133,22 @@ public class Activity2 extends AppCompatActivity {
                 || ettotal.getText().length() == 0 || etfechafactura.getText().length() == 0 || etfechavencimiento.getText().length() == 0) {
             Toast.makeText(getApplicationContext(), "Debes rellenar todos los campos", Toast.LENGTH_LONG).show();
         } else {
+            //aquí va el sharedpreferences();
+            //antes del alertdialog
+
+
+
             AlertDialog.Builder alerta = new AlertDialog.Builder(Activity2.this);
 
             alerta.setMessage("¿Desea enviar la factura por email?")
                     .setCancelable(false).setPositiveButton("SI", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    String ficheroBinario = "factura.bin";
-                    Uri uri = Uri.fromFile(new
-                            File(Environment.getExternalStorageDirectory().getAbsolutePath() + "\\factura.bin", ficheroBinario));
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("application/bin");
-                    i.putExtra(Intent.EXTRA_SUBJECT, ficheroBinario);
-                    i.putExtra(Intent.EXTRA_STREAM,  uri);
-                    startActivity(i);
+                    crearFicheroBinario();
+                    enviarMail();
+                    dialog.cancel();
+
+
                 }
             })
                     .setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -147,7 +156,7 @@ public class Activity2 extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             crearFicheroBinario();
                             Toast.makeText(getApplicationContext(), "Factura guardada correctamente", Toast.LENGTH_LONG).show();
-                            //finish();
+                            dialog.cancel();
                         }
                     });
 
@@ -157,6 +166,47 @@ public class Activity2 extends AppCompatActivity {
 
         }
 
+    }
+
+    public void enviarMail() {
+
+        File file = new File(getFilesDir(), nombreficherobinario);
+        //Uri uridelfile = Uri.fromFile(file);
+
+        Uri uridelfile = FileProvider.getUriForFile(this,
+            BuildConfig.APPLICATION_ID+".fileprovider", file);
+
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+         emailIntent.setType("message/rfc822");
+
+
+        String destinatarios[] = {""};
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, destinatarios);
+
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uridelfile);
+
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, nombreficherobinario);
+        startActivity(Intent.createChooser(emailIntent, "Elige aplicacion de correo..."));
+
+    }
+
+
+    public static Date stringToDate(String fechaEnString, String formato) {
+        if (fechaEnString == null) {
+            return null;
+        }
+        if (formato == null) {
+            formato = "dd/MM/yyyy";
+        }
+ 
+        Date fechaenjava = null;
+        SimpleDateFormat miFormato2 = new SimpleDateFormat(formato);
+        try {
+            fechaenjava = miFormato2.parse(fechaEnString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return fechaenjava;
     }
 
 

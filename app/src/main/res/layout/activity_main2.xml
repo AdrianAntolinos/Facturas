@@ -75,7 +75,7 @@
         android:onClick="generarFactura"
         android:text="GENERAR FACTURA"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btvolver" />
+        app:layout_constraintTop_toBottomOf="@+id/btborrar" />
 
     <EditText
         android:id="@+id/etdescripcion"
@@ -144,13 +144,13 @@
         app:layout_constraintTop_toBottomOf="@+id/etfechafactura" />
 
     <Button
-        android:id="@+id/btvolver"
+        android:id="@+id/btborrar"
         android:layout_width="164dp"
         android:layout_height="55dp"
         android:layout_marginStart="132dp"
         android:layout_marginTop="45dp"
-        android:onClick="volver"
-        android:text="VOLVER"
+        android:onClick="borrar"
+        android:text="BORRAR"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etfechavencimiento" />
 </androidx.constraintlayout.widget.ConstraintLayout>
